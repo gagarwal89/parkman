@@ -1,1 +1,8 @@
+# Natural Langauge Toolkit
 nltk
+
+# Configuration - YAML
+pyyaml
+
+# Twitter API
+tweepy
