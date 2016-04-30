@@ -1,4 +1,5 @@
-from config import config
+from __future__ import absolute_import
+from parkman.config import config
 import tweepy
 
 
@@ -20,12 +21,15 @@ class TwitterGateway:
 
     def get_original_tweet(self, screen_name, number_of_tweets):
         statuses = self.api.user_timeline(screen_name=screen_name, count=number_of_tweets)
-
         original_ids = []
         for status in statuses:
-            if status.in_reply_to_status_id != None:
-                original_ids.extend(status.in_reply_to_status_id)
+            if status.in_reply_to_status_id:
+                original_ids.append(status.in_reply_to_status_id)
 
-        original_statuses = self.api.statuses_lookup(original_ids)
+        original_statuses = self.api.statuses_lookup(
+            original_ids, 
+            include_entities=False,
+            trim_user=True)
+
         for question in original_statuses:
             print question.text
