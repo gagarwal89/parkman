@@ -21,7 +21,7 @@ class TwitterGateway:
         public_tweets = self.api.home_timeline()
         return public_tweets
 
-    def get_original_tweet(self, screen_name, number_of_tweets):
+    def get_original_tweets(self, screen_name, number_of_tweets):
         original_tweets = []
         for status in tweepy.Cursor(self.api.user_timeline, screen_name=screen_name).items(number_of_tweets):
             
@@ -30,7 +30,7 @@ class TwitterGateway:
                 original_tweet = self.process_status(status)
 
                 if original_tweet:
-                    print original_tweet
+                    yield original_tweet
 
     def process_status(self, status):
         if not status.in_reply_to_status_id:
