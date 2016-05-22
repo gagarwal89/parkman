@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from parkman.config import config
+from parkman.utils.collection import CollectionUtil
 import tweepy
 from tweepy import (
     TweepError
@@ -15,29 +16,26 @@ class TwitterGateway:
         auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
         auth.set_access_token(access_token, access_token_secret)
 
-        self.api = tweepy.API(auth, wait_on_rate_limit=True)
+        self.api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
     def get_my_tweets(self):
         public_tweets = self.api.home_timeline()
         return public_tweets
 
     def get_original_tweets(self, screen_name, number_of_tweets):
-        original_tweets = []
         for status in tweepy.Cursor(self.api.user_timeline, screen_name=screen_name).items(number_of_tweets):
             
             # process status here
             if status.in_reply_to_status_id:
-                original_tweet = self.process_status(status)
+                yield status.in_reply_to_status_id
 
-                if original_tweet:
-                    yield original_tweet
+    def get_all_tweets_for_user(self, screen_name):
+        # Download all tweets for a user
+        for status in tweepy.Cursor(self.api.user_timeline, screen_name=screen_name).items():
+            yield status
 
-    def process_status(self, status):
-        if not status.in_reply_to_status_id:
-            return status.text
-        else:
-            try:
-                status = self.api.get_status(status.in_reply_to_status_id)
-                return self.process_status(status)
-            except TweepError as e:
-                return None
+    def get_bulk_statuses(self, status_ids):
+        max_size = 100 # Max size twitter allows
+        for batch_ids in CollectionUtil.generate_batches(status_ids, max_size):
+            for status in self.api.statuses_lookup(batch_ids):
+                yield status
