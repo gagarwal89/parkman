@@ -4,10 +4,14 @@ nltk
 # Configuration - YAML
 pyyaml
 
-# SyntaxNet 
+#AI ML
+aiml
+
+# Google SyntaxNet 
 protobuf == 3.0.0b2
 asciitree
 numpy
+https://storage.googleapis.com/tensorflow/mac/tensorflow-0.8.0-py2-none-any.whl
 
 # Twitter API
 tweepy
