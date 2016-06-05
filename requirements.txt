@@ -4,9 +4,15 @@ nltk
 # Configuration - YAML
 pyyaml
 
+# SyntaxNet 
+protobuf == 3.0.0b2
+asciitree
+numpy
+
 # Twitter API
 tweepy
 
 # DB
 SQLAlchemy
 Mysql-python
+
